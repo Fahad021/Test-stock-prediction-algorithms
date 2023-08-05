@@ -79,14 +79,7 @@ def build_data_chain(input):
     # calculate number of times each item appears and save
     counts = input.value_counts().to_dict()
     total = len(input)
-    # print(counts)
-
-    
-    # convert to probabilty of each change occurring s/b sum to ~1
-    probability = {k: v / total for k, v in counts.items()}
-    #print(probability)
-    
-    return probability
+    return {k: v / total for k, v in counts.items()}
     
 
 
@@ -98,30 +91,22 @@ def build_state_machine(input):
 
     # get total shifts so we can use probabilities in predictions
     total = len(input)
-    
+
     # create edges
     edges = []
     for i in range(len(uniques)):
         
         n = list(uniques)[i]
 
-        for j in range(len(data)-1):
-
-            if data[j] == n:
-                edges.append( (n, data[j+1]) )
-                
-               
+        edges.extend((n, data[j+1]) for j in range(len(data)-1) if data[j] == n)
     # count times each edge occurs
     edge_count = pd.Series(data=edges).value_counts()
     edge_nodes = edge_count.index.tolist()
 
-    # add edges to graph
-    markov = []
-    for i in range(len(edge_count)):    
-       # g.add_edge(edge_nodes[i][0], edge_nodes[i][1], edge_count[i])
-        markov.append((edge_nodes[i][0], edge_nodes[i][1], edge_count[i]/total))    
-
-    return markov
+    return [
+        (edge_nodes[i][0], edge_nodes[i][1], edge_count[i] / total)
+        for i in range(len(edge_count))
+    ]
 
     
 
@@ -144,10 +129,9 @@ def make_prediction(state_machine, prime, n_days=5, greedy=.9):
     current_state = prime          # starting condition
 
     #print('prime', prime)
-    
+
     # loop over state machine picking most likely or random
-    for i in range(n_days):
-    
+    for _ in range(n_days):
         r1 = np.random.random()
 
         if r1 < greedy:         # pick most likely
@@ -157,15 +141,15 @@ def make_prediction(state_machine, prime, n_days=5, greedy=.9):
                 if j[0] == current_state:
                     pick = j[1]
                     break
-                
-                
+
+
         else:                  # pick random
             r2 = np.random.randint(n_states)
             pick = states[r2]
 
         current_state = pick
         prediction_chain.append(pick)
-            
+
 
     return prediction_chain
 

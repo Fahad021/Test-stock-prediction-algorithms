@@ -35,16 +35,13 @@ class Data:
         
     def price_at_index(self, index):
         
-        price = self.data.iloc[index]
-        return price
+        return self.data.iloc[index]
         
         
     def price_at_date(self, month, day, year):
         
         date = datetime(year, month, day)
-        price = self.data.loc[date]
-        
-        return price
+        return self.data.loc[date]
         
         
         

@@ -75,33 +75,31 @@ class SeriesPredictor:
             patience = max_patience
             min_test_err = float('inf')
             step = 0
-            
+
             while patience > 0:
                 _, train_err = sess.run([self.train_op, self.cost], feed_dict={self.x: train_x, self.y: train_y})
-            
+
                 if step % 100 == 0:
-            
+                        
                     test_err = sess.run(self.cost, feed_dict={self.x: test_x, self.y: test_y})
-                    print('step: {}\t\ttrain err: {}\t\ttest err: {}'.format(step, train_err, test_err))
-            
+                    print(f'step: {step}\t\ttrain err: {train_err}\t\ttest err: {test_err}')
+
                     if test_err < min_test_err:
                         min_test_err = test_err
                         patience = max_patience
                     else:
                         patience -= 1
                 step += 1
-            
+
             save_path = self.saver.save(sess, 'model.ckpt')
-            print('Model saved to {}'.format(save_path))
+            print(f'Model saved to {save_path}')
 
 
     def test(self, sess, test_x):
 
         tf.get_variable_scope().reuse_variables()
         self.saver.restore(sess, './model.ckpt')
-        output = sess.run(self.model(), {self.x: test_x})
-        
-        return output
+        return sess.run(self.model(), {self.x: test_x})
 
 #######################################################################
 
@@ -133,9 +131,7 @@ def load_series(filename, idx=1):
 
     # format data
     data = z['value'].tolist()
-    normalized_data = (data - np.mean(data)) / np.std(data)
-
-    return normalized_data        
+    return (data - np.mean(data)) / np.std(data)        
 
 
 def split_data(data, percent_train = 0.95):
@@ -209,8 +205,7 @@ with tf.Session() as sess:
 
 
 
-    for i in range(250):            # ~ 1 year
-
+    for _ in range(250):
         next_sequence = predictor.test(sess, [previous_sequence])
         predicted_values.append(next_sequence[-1])
         previous_sequence = np.vstack((previous_sequence[1:], next_sequence[-1]))

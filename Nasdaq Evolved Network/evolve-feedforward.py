@@ -46,7 +46,7 @@ for i in range(n_samples - n_inputs - 1):
 
     x.append(index[i:i+n_inputs] )
     y.append([index[i+1]])
-    
+
 x = np.asarray(x)
 y = np.asarray(y)    
 
@@ -55,16 +55,16 @@ y = np.asarray(y)
 
 
 #print(x.shape, y.shape)
- 
+
 # hold out last samples for testing
 n_train = int(n_samples * .9)
 n_test = n_samples - n_train
 
 print('train, test', n_train, n_test)
 
-train_x = x[0:n_train]
+train_x = x[:n_train]
 test_x = x[n_train:-1]
-train_y = y[0:n_train]
+train_y = y[:n_train]
 test_y = y[n_train:-1]
 print('data split', train_x.shape, train_y.shape)
 print('data split', test_x.shape, test_y.shape)
@@ -112,19 +112,16 @@ def eval_genomes(genomes, config):
     for genome_id, genome in genomes:
         genome.fitness = n_train
         net = neat.nn.FeedForwardNetwork.create(genome, config)
-    
+
         for xi, xo in zip(train_x, train_y):
             output = net.activate(xi)
             error = (output[0] - xo[0]) **2
-            
-            
+
+
             # clipping the error keeps more species in play
             #genome.fitness -= lr * error
-            
-            if error < clip_error:
-                genome.fitness -= error 
-            else:
-                genome.fitness -= clip_error 
+
+            genome.fitness -= min(error, clip_error) 
             
             
 

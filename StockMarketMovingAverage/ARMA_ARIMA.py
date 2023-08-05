@@ -90,9 +90,9 @@ def stationary_test(df):
     print('Results of Dickey-Fuller Test:')
     df_test=adfuller(df)
     indices = ['Test Statistic', 'p-value', 'No. Lags Used', 'Number of Observations Used']
-    output = pd.Series(df_test[0:4], index=indices) # 4 lags for quarterly, 12 for monthly
+    output = pd.Series(df_test[:4], index=indices)
     for key, value in df_test[4].items():
-        output['Critical value (%s)' % key] = value
+        output[f'Critical value ({key})'] = value
     print(output)
 
 stationary_test(data['returns'])

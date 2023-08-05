@@ -135,7 +135,7 @@ mu, sigma = norm.fit(data['NASDAQ_dx'])
 y = mlab.normpdf(bins, mu, sigma)
 l = plt.plot(bins, y, 'r--', linewidth=2)
 
-t = 'Nasdaq mean ' + str(mu) + ',  std ' + str(sigma) +  ',  Kurtosis ' + str(kurt) + ',  Skew ' + str(skw)
+t = f'Nasdaq mean {str(mu)},  std {str(sigma)},  Kurtosis {str(kurt)},  Skew {str(skw)}'
 
 plt.ylabel('Probability')
 plt.title(t)
@@ -154,7 +154,7 @@ mu, sigma = norm.fit(data['DJIA_dx'])
 y = mlab.normpdf(bins, mu, sigma)
 l = plt.plot(bins, y, 'r--', linewidth=2)
 
-t = 'DJIA mean ' + str(mu) + ',  std ' + str(sigma) + ', Kurtosis ' + str(kurt) + ', Skew ' + str(skw)
+t = f'DJIA mean {str(mu)},  std {str(sigma)}, Kurtosis {str(kurt)}, Skew {str(skw)}'
 
 plt.ylabel('Probability')
 plt.title(t)
@@ -171,7 +171,7 @@ skw = skew(data['S&P_dx'])
 mu, sigma = norm.fit(data['S&P_dx'])
 y = mlab.normpdf(bins, mu, sigma)
 l = plt.plot(bins, y, 'r--', linewidth=2)
-t = 'S&P mean ' + str(mu) + ',  std ' + str(sigma) + ', Kurtosis ' + str(kurt) + ', Skew ' + str(skw)
+t = f'S&P mean {str(mu)},  std {str(sigma)}, Kurtosis {str(kurt)}, Skew {str(skw)}'
 
 
 plt.ylabel('Probability')
@@ -190,7 +190,7 @@ skw = skew(data['Russell_dx'])
 mu, sigma = norm.fit(data['Russell_dx'])
 y = mlab.normpdf(bins, mu, sigma)
 l = plt.plot(bins, y, 'r--', linewidth=2)
-t = 'Russell mean ' + str(mu) + ',  std ' + str(sigma) + ', Kurtosis ' + str(kurt) + ', Skew ' + str(skw)
+t = f'Russell mean {str(mu)},  std {str(sigma)}, Kurtosis {str(kurt)}, Skew {str(skw)}'
 
 
 plt.ylabel('Probability')
@@ -210,7 +210,7 @@ m, var, std, skw, kurt = statistics(data['BTC_dx'])
 #mu, sigma = norm.fit(data['BTC_dx'])
 y = mlab.normpdf(bins, m, std)
 l = plt.plot(bins, y, 'r--', linewidth=4)
-t = 'BTC mean ' + str(m) + ',  std ' + str(std) + ', Kurtosis ' + str(kurt) + ', Skew ' + str(skw)
+t = f'BTC mean {str(m)},  std {str(std)}, Kurtosis {str(kurt)}, Skew {str(skw)}'
 
 
 

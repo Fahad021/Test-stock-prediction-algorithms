@@ -90,8 +90,7 @@ class RandomDecisionPolicy(DecisionPolicy):
         self.actions = actions
 
     def select_action(self, current_state, step):
-        action = self.actions[random.randint(0, len(self.actions) - 1)]
-        return action 
+        return self.actions[random.randint(0, len(self.actions) - 1)] 
 
 
 
@@ -126,14 +125,12 @@ class QLearningDecisionPolicy(DecisionPolicy):
 
         threshold = min(self.epsilon, step / 1000.)
 
-        if random.random() < threshold:
-            action_q_vals = self.sess.run(self.q, {self.x: current_state})
-            action_idx = np.argmax(action_q_vals)
-            action = self.actions[action_idx]
-        else:
-            action = self.actions[random.randint(0, len(self.actions) - 1)]
+        if random.random() >= threshold:
+            return self.actions[random.randint(0, len(self.actions) - 1)]
 
-        return action
+        action_q_vals = self.sess.run(self.q, {self.x: current_state})
+        action_idx = np.argmax(action_q_vals)
+        return self.actions[action_idx]
 
 
     def update_Q(self, state, action, reward, next_state):
@@ -154,7 +151,7 @@ def run_simulation(policy, initial_budget, initial_number_stocks, prices, histor
     n_stocks = initial_number_stocks
     share_value = 0
     plan = []
-    transitions = list()
+    transitions = []
 
     for i in range(len(prices) - history - 1):
 
@@ -181,7 +178,7 @@ def run_simulation(policy, initial_budget, initial_number_stocks, prices, histor
 
         policy.update_Q(current_state, action, reward, next_state)
         plan.append((action, share_value))
-        
+
     portfolio = budget + n_stocks * share_value
     return portfolio, plan
 
@@ -189,11 +186,11 @@ def run_simulation(policy, initial_budget, initial_number_stocks, prices, histor
 
 def run_simulations(policy, budget, n_stocks, prices, history):
     n_tries = 10
-    final_portfolios = list()
-    final_policies = list()
-    final_plans = list()
+    final_portfolios = []
+    final_policies = []
+    final_plans = []
 
-    for i in range(n_tries):
+    for _ in range(n_tries):
         final_portfolio, final_plan = run_simulation(policy, budget, n_stocks, prices, history)
         final_portfolios.append(final_portfolio)
         final_plans.append(final_plan)
@@ -226,11 +223,8 @@ prices = prices[history:-1]
 
 fig = plt.figure(figsize=(24,16))
 ax = fig.add_subplot(1,1,1)
-d = 0
-for p in last_plan:
-    action, price = p 
-    d += 1
-   
+for d, p in enumerate(last_plan, start=1):
+    action, price = p
     if action == 'Buy': 
         ax.scatter(d, price, c='green', alpha=0.7, s=12)
     if action == 'Sell': 
@@ -240,7 +234,7 @@ for p in last_plan:
 # compute how well we did
 years = len(last_plan) / 251
 earnings = (avg - budget) / budget * 100.
-net = avg - budget 
+net = avg - budget
 roi = np.power((budget + net/budget), (1./years)) 
 
 

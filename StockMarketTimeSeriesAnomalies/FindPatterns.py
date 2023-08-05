@@ -69,16 +69,16 @@ for idx, row in data.iterrows():
         end = int(row.i)
         pattern = np.asarray(data.iloc[start:end, :]['dx'].values)
 
-        if row.GainLoss == 1:       # very bad day 
+        if row.GainLoss == 1:
             lowReturns.append(pattern)
 
-        if row.GainLoss == 2:       
+        elif row.GainLoss == 2:
             slightlyLowReturns.append(pattern)
 
-        if row.GainLoss == 3:       
+        elif row.GainLoss == 3:
             slightlyHighReturns.append(pattern)
 
-        if row.GainLoss == 4:       # very good day
+        elif row.GainLoss == 4:
             highReturns.append(pattern)
 
 
