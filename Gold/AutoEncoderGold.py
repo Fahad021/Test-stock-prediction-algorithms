@@ -1,9 +1,9 @@
 # http://github.com/timestocome
 
 
-import numpy as np 
-import pandas as pd 
-import tensorflow as tf 
+import numpy as np
+import pandas as pd
+import tensorflow as tf
 import matplotlib.pyplot as plt 
 
 # attempt to use an auto-encoder to find deviations from norm 
@@ -16,7 +16,7 @@ data = pd.read_csv('data/GOLD.csv', parse_dates=True, index_col='Date')
 data['Open'] = pd.to_numeric(data['Open'], errors='coerce')
 
 # convert to log scale
-data['LogOpen'] = np.log(data[['Open']]) 
+data['LogOpen'] = np.log(data[['Open']])
 data['dx'] = data['LogOpen'] - data['LogOpen'].shift(1)
 
 data = data.dropna()
@@ -55,8 +55,8 @@ print("months ", len(months_df))
 # convert to numpy matrix
 print(len(weeks_df))
 weeks = []
-for i in range(len(weeks_df)):
-    row = weeks_df[i]
+for item in weeks_df:
+    row = item
     x = np.asarray(row['LogOpen'].values)
     weeks.append(x)
 
@@ -115,7 +115,7 @@ class Autoencoder:
             sess.run(tf.global_variables_initializer())
 
             for i in range(self.epoch):
-                for j in range(len(data)):
+                for _ in range(len(data)):
                     batch_data = get_batch(data, batch_size)
                     l, _ = sess.run([self.loss, self.train_op], {self.x: batch_data})
 

@@ -38,20 +38,14 @@ window = 6          # try a x day sliding window
 # convert daily change to -1, 1 to simplify things
 data['change'] = np.where(data['dx'] > 0, 1, -1)
 
-# look for patterns in the gains, losses
-# slide window over data and collect patterns
-collect_patterns = []
 pattern = []
 changes = data['change'].values
 
 n_changes = len(changes)
 
-for i in range(len(changes) - window):
-    collect_patterns.append(changes[i:i+window])
-    
-    
+collect_patterns = [changes[i:i+window] for i in range(len(changes) - window)]
 # pull out unique patterns
-unique_patterns = set(tuple(z) for z in collect_patterns)
+unique_patterns = {tuple(z) for z in collect_patterns}
 
 
 # get frequency counts
@@ -92,18 +86,17 @@ for k, v in sorted_list:
                 print("Pattern: %s Next day gain occurs: %.3lf%% of the time" % (p1, gain/(loss + gain) * 100.) )
             else:
                 print("Pattern: %s Next day loss occurs: %.3lf%% of the time" % (p1, loss/(loss + gain) * 100.) )
-        else:
-             if frequency > 2: # loop counts unique patterns twice in frequency
-                print('Pattern appears once')
+        elif frequency > 2: # loop counts unique patterns twice in frequency
+            print('Pattern appears once')
 
-                if gain > loss:
-                    print("Pattern: %s Next day gain occurs: 100%% of the time" % p1)
-                else:
-                    print("Pattern: %s Next day loss occurs: 100%% of the time" % p1)
-
+            if gain > loss:
+                print("Pattern: %s Next day gain occurs: 100%% of the time" % p1)
+            else:
+                print("Pattern: %s Next day loss occurs: 100%% of the time" % p1)
 
 
 
-    last_key = k 
+
+    last_key = k
     last_value = v
 

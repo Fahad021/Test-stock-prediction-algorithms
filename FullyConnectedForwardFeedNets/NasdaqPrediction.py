@@ -83,7 +83,7 @@ L2 = 0.001
 def read_data_file():
 
     data = pd.read_csv('LeveledLogStockData.csv', parse_dates=True, index_col=0)
-    
+
     # keep only what's necessary
     data = data[['leveled log Nasdaq']]
     data.columns = ['Nasdaq']
@@ -94,7 +94,7 @@ def read_data_file():
 
     n_samples = len(data)
     # daily has 6805 samples
-    
+
 
     # quick check on data
     #print(data)
@@ -103,28 +103,28 @@ def read_data_file():
     #plt.legend(loc='best')
     #plt.title("Log of Nasdaq data rotated to follow x_axis")
     #plt.show()
-    
+
     # how many days ahead to predict?
     # shift 1 for one day predictions, 5 for weekly, 21 monthly, 63 quarterly, 253 yrly
 
     # pull out one year of data
     n_valid = 253
-    
+
     # x is today's data, shift by 1 so y is next number in sequence
     x = data['Nasdaq'].values
     y = data['Nasdaq'].shift(n_days).values      
 
-    
+
     # remove as many items as we've shifted from top of array
     x = x[n_days:-1]
     y = y[n_days:-1]
 
     # split into training and validation sets
-    x_train = x[0:len(data)-n_valid]
-    y_train = y[0:len(data)-n_valid]
+    x_train = x[:len(data)-n_valid]
+    y_train = y[:len(data)-n_valid]
     x_valid = x[len(x_train):-1]
     y_valid = y[len(y_train):-1]
-    
+
     print(len(x_train), len(y_train), len(x_valid), len(y_valid))
 
 
@@ -217,22 +217,22 @@ class FullyConnected:
 
         costs = []
         for i in range(epochs):
-            
+
             cost = 0
             predictions = []
             for j in range(len(y)):
                 c = self.train_op(x[j], y[j])
                 cost += c 
                 predictions.append( self.predict_op(x[j]))
-                
-                
 
-            
+
+
+
             # output cost so user can see training progress
             cost /= len(y)
             print ("Training cost:", i, "cost:", cost * 100., "%")
             costs.append(cost)
-            
+
 
         # graph to show accuracy progress - cost function should decrease
         plt.figure(figsize=(20,16))
@@ -242,10 +242,10 @@ class FullyConnected:
         plt.title("Nasdaq prediction on training data")
         plt.savefig('training_nasdaq.png')
         plt.show()
-        
 
 
-        
+
+
         # predictions on validation data
         new_predictions = []
         validation_cost = 0.0
@@ -262,7 +262,7 @@ class FullyConnected:
         plt.title("Nasdaq validation data predictions")
         plt.savefig('nasdaq_validatation.png')
         plt.show()
-        
+
         print("Validation cost: ", validation_cost)
 
 
@@ -285,32 +285,32 @@ class FullyConnected:
 
         #####################################################################################
         # reverse data from scaled and rotated back to actual
-        
+
         # de-rotate data                     ( reverse this data['log NASDAQ'] - (6.4540 + data['step'] * 0.0003))      
         starting_step = 6805 - prediction_length         #  get starting step
 
         # de-log data                        ( e ^ x )
-        
+
         for i in range(len(y_valid)):
             y_valid[i] -= 1.                            # recenter between -1..1 from 0..2   ( subtract 1)
-            y_valid[i] = y_valid[i] + (6.4540 + (starting_step+i) * 0.0003)      # remove rotation
+            y_valid[i] += 6.4540 + (starting_step+i) * 0.0003
             y_valid[i] = np.e **y_valid[i]                 # undo log
 
 
         for i in range(len(new_predictions)):
             new_predictions[i] -= 1.
-            new_predictions[i] = new_predictions[i] + (6.4540 + (starting_step+i) * 0.0003)
+            new_predictions[i] += 6.4540 + (starting_step+i) * 0.0003
             new_predictions[i] = np.e **new_predictions[i]
 
 
         # plot predictions on unseen data
         plt.figure(figsize=(20,16))
-        plt.plot(y_valid[0: 2 * n_days], label='Actual')
-        plt.plot(new_predictions[0:2 * n_days], label='Predicted')
+        plt.plot(y_valid[:2 * n_days], label='Actual')
+        plt.plot(new_predictions[:2 * n_days], label='Predicted')
         plt.scatter(n_days, new_predictions[n_days], label='Predicted value on target date', s=50, alpha=0.4)
         plt.scatter(n_days, y_valid[n_days], label='Actual value on target date', s=10, alpha=0.2)
         plt.legend(loc='best')
-        t = "Nasdaq prediction in " + str(n_days) + " days"
+        t = f"Nasdaq prediction in {str(n_days)} days"
         plt.title(t)
         plt.savefig('nasdaq_prediction.png')
         plt.show()

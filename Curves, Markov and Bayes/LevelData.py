@@ -78,11 +78,11 @@ data = data.fillna(method='ffill')
 def ols(data):
     m = (data[-1] - data[0]) / len(data)
     b = data[0]
-    
-    print(data[-1], data[0], (data[-1] - data[0]))
+
+    print(data[-1], b, data[-1] - b)
     print(m, b)
-    
-    
+
+
     print('-----------------------')
 
     return m, b

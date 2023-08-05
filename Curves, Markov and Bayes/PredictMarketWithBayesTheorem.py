@@ -108,30 +108,22 @@ def probability_today_given_tomorrow(input):
     # historical data
     print(input)
 
-    
+
     # create edges
     edges = []
     for i in range(len(uniques)):
         
         n = list(uniques)[i]
 
-        for j in range(len(data)-1):
-
-            if data[j] == n:
-                edges.append( (n, data[j+1]) )
-                
-               
+        edges.extend((n, data[j+1]) for j in range(len(data)-1) if data[j] == n)
     # count times each edge occurs
     edge_count = pd.Series(data=edges).value_counts()
     edge_nodes = edge_count.index.tolist()
 
-    # add edges to graph
-    prob_today_given_tomorrow = []
-    for i in range(len(edge_count)):    
-       # g.add_edge(edge_nodes[i][0], edge_nodes[i][1], edge_count[i])
-        prob_today_given_tomorrow.append((edge_nodes[i][0], edge_nodes[i][1], edge_count[i]/total))    
-
-    return prob_today_given_tomorrow
+    return [
+        (edge_nodes[i][0], edge_nodes[i][1], edge_count[i] / total)
+        for i in range(len(edge_count))
+    ]
 
 
 
@@ -224,11 +216,11 @@ predictions = make_predictions(prob, prob, prob_today_given_tomorrow)
 for s in states:
 
     p, t = get_predictions(s, predictions)
-    
+
     print('-------------------------')
-    print("if today's movement %s , then tomorrow's prediction "% s)
+    print(f"if today's movement {s} , then tomorrow's prediction ")
     for i in range(len(p)):
-        
+
         print('Movement:  %s  %.4lf%%' % (p[i][0], p[i][1]/t * 100.))
         
     

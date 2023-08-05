@@ -55,7 +55,7 @@ for i in range(0, n_samples-1):
     t_to = np.where(states == dx[i+1])[0][0]
     transitions[t_from][t_to] += 1
 transition_probability = transitions / n_samples  
-    
+
 # print(transitions)
 
 
@@ -89,13 +89,13 @@ for t in range(n_training_runs):
         a = np.random.randint(n_actions)            # action to take
         p = data['Price'].iloc[i]                   # current price
         v_pi += 1                                   # time step cost
-    
+
         reward = bot.move(p, a, s1)                 # reward when sell coins
         if reward != 0: v_pi = 0                    # reset time step 
-    
-    
+
+
         policy[s1][a] += transition_probability[s1][s2] * (reward + v_pi)    
-    
+
 
 
 
@@ -135,8 +135,9 @@ print('Test for %d days' % run_length)
 print('----------------------------------------------------------------------')
 
 
-for t in range(n_test_runs):
+sells = 0
 
+for _ in range(n_test_runs):
     cash_on_hand = starting_cash
     shares_on_hand = 0.
 
@@ -144,25 +145,16 @@ for t in range(n_test_runs):
     idx = np.random.randint(n_samples - run_length)
 
     buys = 0
-    sells = 0
-
     for i in range(idx, idx + run_length):
 
         s1 = np.where(states == dx[i])[0][0]
         a = np.argmax(saved_policy[s1][:])
 
-        if a == 0:          # buy
+        if a == 0:
             if cash_on_hand > 0:
                 shares_on_hand = cash_on_hand / data['Price'].iloc[i]
                 cash_on_hand = 0.
                 buys += 1
-            
-            elif a == 2:        # sell
-                if shares_on_hand > 0:
-                    cash_on_hand = shares_on_hand * data['Price'].iloc[i]
-                    shares_on_hand = 0.
-                    sells += 1
-
 
     # cash out
     profits = shares_on_hand * data['Price'].iloc[idx + run_length] + cash_on_hand

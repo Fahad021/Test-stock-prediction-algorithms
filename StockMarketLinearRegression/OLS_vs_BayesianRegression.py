@@ -21,7 +21,7 @@ def read_data(file_name):
 
     stock = pd.read_csv(file_name, parse_dates=True, index_col=0)        # 31747 days of data 
     n_samples = len(stock)
-    
+
     # ditch samples with NAN values
     stock = stock.dropna(axis=0)
 
@@ -31,13 +31,7 @@ def read_data(file_name):
     # trim data
     stock = stock[['Open']]
 
-    # trim dates
-    stock = stock.loc[stock.index > '01-01-1990']
-    #stock = stock.loc[stock.index < '12-31-2016']
-
-
-    # all stock is needed to walk back dates for testing hold out data
-    return stock
+    return stock.loc[stock.index > '01-01-1990']
 
 
 #############################################################################################

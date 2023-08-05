@@ -5,7 +5,7 @@
 # simple markov chain 
 
 
-import numpy as np 
+import numpy as np
 import pandas as pd
 
 import matplotlib.pyplot as plt 
@@ -59,7 +59,7 @@ total = len(Gold)
 for ix, row in Gold.iterrows():
     if row.Gold > 0: up += 1
     else: down += 1
-up /= total 
+up /= total
 down /= total
 
 overall_probabilities = { 'up_today': up, 'down_today': down }
@@ -76,14 +76,16 @@ current = Gold.iloc[0].Gold
 
 for ix, row in Gold.iterrows():
 
-    current = row.Gold 
+    current = row.Gold
     if current <= 0:
         if previous <= 0:    down_down += 1
-        elif previous > 0:  up_down += 1
+        else:
+            up_down += 1
 
     if current > 0:
         if previous <= 0:    down_up += 1
-        elif previous > 0:  up_up += 1
+        else:
+            up_up += 1
 
     previous = current
 

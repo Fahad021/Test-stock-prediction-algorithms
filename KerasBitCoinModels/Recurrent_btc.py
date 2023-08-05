@@ -189,8 +189,8 @@ test_gen = generator(float_data,
 
 val_steps = (n_validate - 1 - lookback)
 test_steps = val_steps
-    
-print('val steps', val_steps)
+
+print('val steps', test_steps)
 print('test steps', test_steps)  
 
 ##############################################################################

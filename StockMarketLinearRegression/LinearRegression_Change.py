@@ -165,7 +165,7 @@ init = tf.global_variables_initializer()
 sess.run(init)
 
 
-for epoch in range(training_epochs):
+for _ in range(training_epochs):
     for (x, y) in zip(x_train, y_train):
         sess.run(train_op, feed_dict={X: x, Y: y})
 
@@ -186,12 +186,9 @@ ax1 = plt.subplot(211)
 ax1.plot(y_train, 'b', label='Actual')
 
 y_learned = np.empty([n_samples])
-i = 0
-for x in x_train:
+for i, x in enumerate(x_train):
 
     y_learned[i] = (x * w_value).sum()
-    i += 1
-
 ax1.plot(y_learned, 'r', label='Predicted')
 ax1.set_title("Training data predictions")
 ax1.legend(loc='best')
@@ -208,11 +205,8 @@ ax2 = plt.subplot(212, sharex=ax1, sharey=ax1)
 ax2.plot(z, y_test, 'b', label='Actual')
 
 y_predicted = np.empty([len(y_test)])
-i = 0
-for x in x_test:
+for i, x in enumerate(x_test):
     y_predicted[i] = (x * w_value).sum()
-    i += 1
-
 ax2.plot(z, y_predicted, 'r', label='Prediction')
 
 ax2.set_title("Hold out data predictions")

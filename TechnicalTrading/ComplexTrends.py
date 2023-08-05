@@ -78,24 +78,14 @@ print("    ")
 ######################################################################
 # first attempt at finding trends
 window = window + 1         # try a x day sliding window + plus one to see
-                    # next day gain or loss
-######################################################################
-
-
-# look for patterns in the gains, losses
-# slide window over data and collect patterns
-collect_patterns = []
 pattern = []
 changes = data['change'].values
 
 n_changes = len(changes)
 
-for i in range(len(changes) - window):
-    collect_patterns.append(changes[i:i+window])
-    
-    
+collect_patterns = [changes[i:i+window] for i in range(len(changes) - window)]
 # pull out unique patterns
-unique_patterns = set(tuple(z) for z in collect_patterns)
+unique_patterns = {tuple(z) for z in collect_patterns}
 
 
 # get frequency counts
@@ -124,13 +114,15 @@ for k, v in sorted_list:
     
     pattern = list(k)[:-1]
     future = list(k)[-1]
-    
-    if future == 2: high_gains.append(k)
-    if future == -2: high_losses.append(k)
-    if future == 1: low_gains.append(k)
-    if future == -1: low_losses.append(k)
 
-
+    if future == -1:
+        if future == -1: low_losses.append(k)
+    elif future == -2:
+        high_losses.append(k)
+    elif future == 1:
+        low_gains.append(k)
+    elif future == 2:
+        high_gains.append(k)
 print("--------------------------------------------------------------------------------------------------")
 print("Patterns resulting in large gains")
 print("--------------------------------------------------------------------------------------------------")
@@ -173,7 +165,7 @@ for k, v in sorted_list:
     #print(p, r, v)
 
     if len(p_previous) > 0:
-        
+
         if p != p_previous:
 
             # patterns that only occur once aren't useful:
@@ -181,7 +173,7 @@ for k, v in sorted_list:
                 print('*********************************************************')
                 print(p)
                 for i in range(len(frequencies)):
-            
+
                     if results[i] == 2: x = 'High gain'
                     elif results[i] == 1: x = 'Low gain'
                     elif results[i] == -1: x = 'Small loss'
@@ -193,7 +185,7 @@ for k, v in sorted_list:
         else:
            results.append(r)
            frequencies.append(v)
-    
-    
+
+
     p_previous = p    
 

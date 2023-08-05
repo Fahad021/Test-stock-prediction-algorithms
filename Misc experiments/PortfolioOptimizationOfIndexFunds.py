@@ -26,7 +26,7 @@ def read_data(file_name):
 
     stock = pd.read_csv(file_name, parse_dates=True, index_col=0)        # 31747 days of data 
     n_samples = len(stock)
-    
+
     # ditch samples with NAN values
     stock = stock.dropna(axis=0)
 
@@ -38,11 +38,7 @@ def read_data(file_name):
 
     # trim dates
     stock = stock.loc[stock.index > '01-01-1990']
-    stock = stock.loc[stock.index < '12-31-2016']
-
-
-    # all stock is needed to walk back dates for testing hold out data
-    return stock
+    return stock.loc[stock.index < '12-31-2016']
 
 
 #############################################################################################
@@ -183,7 +179,7 @@ print(30 * '-')
 # weights must add up to 1 ( 100% of money invested)
 noa = len(stocks)
 constraints = ({'type': 'eq', 'fun': lambda x: np.sum(x) - 1})
-bounds = tuple((0, 1) for x in range(noa))
+bounds = tuple((0, 1) for _ in range(noa))
 
 
 def statistics(weights):

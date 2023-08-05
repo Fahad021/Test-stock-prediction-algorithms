@@ -51,7 +51,7 @@ def plot_fft(f):
     x = data.loc[data.index < '06-30-2016']     # pull out 6 months data to check prediction
     x = x[f]
     z = data[f]
-    
+
     # match this to hold out data count to properly line up plot lines
     n_predict = 126         # number of data points to predict (5 week, 21 month, 63 quarter, 126 half year)
 
@@ -60,11 +60,7 @@ def plot_fft(f):
     plt.setp(axs, xticks=np.arange(1, 7000, step=1300), xticklabels=np.arange(1990, 2016, step=5))
 
 
-    i = 0
-    
-    
-    
-    for h in range(1,13):
+    for i, h in enumerate(range(1,13)):
 
         extrapolation = fourierEx(x, n_predict, h)
 
@@ -73,12 +69,8 @@ def plot_fft(f):
         axs[i].plot(np.arange(len(z)), z, 'b', label=f, linewidth=2)
         axs[i].plot(np.arange(len(x)), x, 'darkgray', label='training data', linewidth=1)
 
-        i += 1
-
-
-    
     plt.legend(loc=0)
-    plot_file = "FFT %s.png" %(f)
+    plot_file = f"FFT {f}.png"
     plt.savefig("FFT_Nasdaq.png")
     plt.show()
 

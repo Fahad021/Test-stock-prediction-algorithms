@@ -50,12 +50,11 @@ h_plots = data['logReturnsNASDAQ'].groupby([data.index.year]).apply(plot_histogr
 
 
 plots = []
-y = 1990
 r = 3
 c = 9
 plot_n = 1
 plt.figure(figsize=(30, 12))
-for i, p in h_plots.iteritems():
+for y, (i, p) in enumerate(h_plots.iteritems(), start=1990):
     plt.subplot(r, c, plot_n)
     n = p[0]
     bins = p[1]
@@ -65,7 +64,6 @@ for i, p in h_plots.iteritems():
     end_date = '12/31/%d' % y
     yearly_returns = data.loc[(data.index >= start_date) & (data.index <= end_date) ]
     plt.title("%d  LogNet: %f" % (y, yearly_returns['logReturnsNASDAQ'].sum()))
-    y += 1
     plot_n += 1
 
 plt.savefig('BullBearHistograms.png')

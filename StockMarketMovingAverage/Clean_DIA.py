@@ -25,7 +25,7 @@ dja = pd.read_csv('DJA.csv')        # 31747 days of data
 n_samples = len(dja)
 
 # get more details on the date
-dja['Year'] = pd.DatetimeIndex(dja['Date']).year 
+dja['Year'] = pd.DatetimeIndex(dja['Date']).year
 dja['Month'] = pd.DatetimeIndex(dja['Date']).month
 dja['Day'] = pd.DatetimeIndex(dja['Date']).day
 dja['DayOfWeek'] = pd.DatetimeIndex(dja['Date']).dayofweek   # Monday is day 0
@@ -37,7 +37,7 @@ dja['dx'] = dja['DJIA'] - dja['DJIA'].shift(1)      # points
 dja['percent_dx'] = dja['dx'] / dja['DJIA']         # percent
 
 # 2nd derviative
-dja['d2x'] = dja['dx'] - dja['dx'].shift(1) 
+dja['d2x'] = dja['dx'] - dja['dx'].shift(1)
 dja['percent_d2x'] = dja['d2x'] / dja['DJIA']
 
 
@@ -89,15 +89,15 @@ print(max_scaled_year)
 years = []
 
 for i in range(max_scaled_year):
-    y = 'Y' + str(i)            # create name for column
+    y = f'Y{str(i)}'
     years.append(y)             # add to column list
     dja[y] = 0                  # init new column to zero
 
 
 # convert year
 def one_hot_year(yr):
-    adj_yr = yr - min_year 
-    y = 'Y' + str(adj_yr)
+    adj_yr = yr - min_year
+    y = f'Y{str(adj_yr)}'
     dja[y] = 1
 
 dja['Year'].apply(one_hot_year) 
@@ -110,7 +110,7 @@ dja = dja.dropna()
 
 # sanity check
 features = ['percent_dx', 'percent_d2x', 'Scaled_DJIA', 'Q1', 'Q2', 'Q3', 'Q4', 'DoW1', 'DoW2', 'DoW3', 'DoW4', 'DoW5', 'M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'M10', 'M11', 'M12']
-features = features + years
+features += years
 print(features)
 dja = dja[features]
 print(dja)

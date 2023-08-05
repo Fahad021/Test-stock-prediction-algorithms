@@ -1,8 +1,8 @@
 # http://github.com/timestocome
 
 
-import numpy as np 
-import pandas as pd 
+import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt 
 
 
@@ -67,23 +67,23 @@ for idx, row in data.iterrows():
             balance_gold -= commission
             ounces_gold += balance_gold / row.Gold 
             balance_gold = 0
-    
+
     if row.Nasdaq >= row.Nasdaq_max:    # sell nasdaq
         if shares_nasdaq > 0.:
             balance_nasdaq -= commission
             balance_nasdaq += shares_nasdaq * row.Nasdaq
             shares_nasdaq = 0.
-    
+
     if row.Nasdaq <= row.Nasdaq_min:       # buy nasdaq
         if balance_nasdaq > 0.: 
             balance_nasdaq -= commission
             shares_nasdaq += balance_nasdaq / row.Nasdaq
             balance_nasdaq = 0.
 
-    
+
 
 # cash out at end
-last_gold_price = data.iloc[-1].Gold 
+last_gold_price = data.iloc[-1].Gold
 last_nasdaq_price = data.iloc[-1].Nasdaq 
 
 # if still holding shares/gold cash out
@@ -97,7 +97,7 @@ if shares_nasdaq > 0.:
 
 
 
-nasdaq_gain = balance_nasdaq - beginning_balance 
+nasdaq_gain = balance_nasdaq - beginning_balance
 gold_gain = balance_gold - beginning_balance
 
 
@@ -105,7 +105,11 @@ gold_gain = balance_gold - beginning_balance
 ####################################################################
 # plots
 
-t = 'Support level trading using ' + str(window) + ' trading days, gold gain/loss: ' + str(gold_gain) + ' Nasdaq gain/loss: ' + str(nasdaq_gain)
+t = (
+    f'Support level trading using {str(window)} trading days, gold gain/loss: {str(gold_gain)}'
+    + ' Nasdaq gain/loss: '
+    + str(nasdaq_gain)
+)
 
 
 plt.figure(figsize=(16,16))

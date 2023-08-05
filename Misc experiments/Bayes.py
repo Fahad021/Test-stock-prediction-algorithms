@@ -48,7 +48,7 @@ for f in features:
     # bayes probabilty stock up tomorrow given today's feature increase or decrease
     # probability (B|A) = (p(B) * p(A|B)) / ( p(B) * p(A|B) + p(notB) * p(A|notB)
     # probability (Stock up | Indicator up ) = (p(Stock up) * p(Indicator up | Stock up) / (p(Stock up) * p(Indicator up|Stock up) + p(Stock down) * p(Indicator up | Stock down))
-    
+
     p_stock_up = p_up.sum()['target'] / n_samples       # p(B)
     p_stock_down = p_down.sum()['target'] / n_samples   # p(not B)
 
@@ -74,7 +74,7 @@ for f in features:
     #print(p_target_up_feature_up, p_target_up_feature_down, p_target_down_feature_up, p_target_down_feature_down, total_c)
 
 
-    
+
     print("Probability Nasdaq up tomorrow if %s up today: %f" % (f, p_target_up_feature_up))
     print("Probability Nasdaq down tomorrow if %s up today: %f" % (f, p_target_down_feature_up))
     print("Probability Nasdaq up tomorrow if %s down today: %f" % (f, p_target_up_feature_down))
@@ -102,26 +102,21 @@ for f in range(len(features)):
 
     days_up = 0
     days_down = 0
-    for d in range(len(p_up)):              # for each day in our data array
+    for d in range(len(p_up)):          # for each day in our data array
         today = p_up.ix[d]
         next_day = -1
 
-        if today[f] == 1:           # indicator is up today
+        if today[f] == 1:   # indicator is up today
             days_up += 1
             up = f_predict[3]       # feature up stock up probability
             down = f_predict[1]     # feature up stock down
-            if up > down:   next_day = 1
-            else: next_day = 0
-
-        else:                       # indicator is down today
+        else:               # indicator is down today
             days_down += 1
             up = f_predict[2]       # feature down, stock up
             down = f_predict[0]     # feature down, stock down
-            if up > down: next_day = 1
-            else: next_day = 0
-    
+        next_day = 1 if up > down else 0
         if today['target'] == next_day: correct += 1
-    
+
     print("Feature days up %d, down %d" % (days_up, days_down))
     print("Feature: %s, accuracy %f" % (features[f], correct/len(p_up) * 100.))
 

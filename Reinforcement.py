@@ -33,7 +33,7 @@ def load_prices():
     data = np.asmatrix(data_in)
     n_test = len(data) // 10
     n_train = len(data) - n_test
-    train = data[0:n_train]
+    train = data[:n_train]
     test = data[n_train:-1]
 
     # have to do some array mangling in training loop, need to start with lists
@@ -66,8 +66,7 @@ class RandomDecisionPolicy():
 
     
     def select_action(self, current_state, step):
-        action = self.actions[random.randint(0, len(self.actions) - 1)]
-        return action
+        return self.actions[random.randint(0, len(self.actions) - 1)]
 
     
     def update_q(self, state, action, reward, next_state):
@@ -113,17 +112,12 @@ class QLearningDecisionPolicy():
     def select_action(self, current_state, step):
 
         threshold = min(self.epsilon, step / 1000.)
-        
-        # if random number (0-1) > epsilon .9 try a random move ~10%
-        if random.random() < threshold:     # take best known action
 
-            action_q_vals = self.sess.run(self.q, feed_dict={self.x: current_state})
-            action_idx = np.argmax(action_q_vals)  
-            action = self.actions[action_idx]
-        
-        else:                               # random
-            action = self.actions[random.randint(0, len(self.actions) - 1)]
-        return action
+        if random.random() >= threshold:
+            return self.actions[random.randint(0, len(self.actions) - 1)]
+        action_q_vals = self.sess.run(self.q, feed_dict={self.x: current_state})
+        action_idx = np.argmax(action_q_vals)
+        return self.actions[action_idx]
 
 
 
@@ -148,10 +142,10 @@ def run_simulation(policy, budget, n_stocks, prices, history):
 
     
     share_value = 0
-    transitions = list()
+    transitions = []
     n_simulations = len(prices) - history - 1
     actions_taken = []      # save the last run of actions for plotting
-    
+
 
     for i in range(n_simulations):
 
@@ -160,14 +154,14 @@ def run_simulation(policy, budget, n_stocks, prices, history):
         budget = np.array([budget]).reshape(1,1)
         n_stocks = np.array([n_stocks]).reshape(1,1)
         i_prices = np.array(prices[i+1 : i+1+history]).T
-        
+
         current_state = np.asmatrix(np.hstack((i_prices, budget, n_stocks)))
 
-        
+
         current_portfolio = budget + n_stocks * share_value
         action = policy.select_action(current_state, i)
         share_value = prices[i + history + 1]
-    
+
         actions_taken.append(action)
 
         if action == 'Buy' and budget >= share_value:
@@ -180,11 +174,11 @@ def run_simulation(policy, budget, n_stocks, prices, history):
 
         else:
             action = 'Hold'
-        
+
         new_portfolio = budget + n_stocks * share_value
         reward = new_portfolio - current_portfolio
 
-    
+
         # painful but necessary array shape manipulations
         next_state = i_prices
         budget = np.array([budget]).reshape(1,1)
@@ -196,7 +190,7 @@ def run_simulation(policy, budget, n_stocks, prices, history):
         policy.update_q(current_state, action, reward, next_state)
 
     portfolio = budget + n_stocks * share_value
-    
+
     return portfolio, actions_taken
 
 
@@ -204,11 +198,10 @@ def run_simulation(policy, budget, n_stocks, prices, history):
 def run_simulations(policy, budget, n_stocks, prices, history):
 
     n_simulations = 10
-    final_portfolios = list()
-    final_actions = list()
-    
-    for i in range(n_simulations):
+    final_portfolios = []
+    final_actions = []
 
+    for _ in range(n_simulations):
         final_portfolio, final_actions = run_simulation(policy, budget, n_stocks, prices, history)
         final_portfolios.append(final_portfolio)
         final_actions.append(final_actions)
@@ -245,12 +238,12 @@ print("Buy all and hold on day one Init: $1000, Profit: %.2f" % buy_and_hold)
 policy = RandomDecisionPolicy(actions)
 avg, std, _ = run_simulations(policy, budget, n_stocks, prices, history)
 print("Random trades: Init: $1000, Avg profit: $%.2f, Std: $%.2f " %(avg, std))
-    
+
 
 # reset init conditions and try RL learning    
 budget = 1000.0
 n_stocks = 0
-    
+
 policy = QLearningDecisionPolicy(actions, history + 2)
 avg, std, actions = run_simulations(policy, budget, n_stocks, prices, history)
 print("Q Learning trades: Init: $1000, Avg profit: $%.2f, Std: $%.2f " %(avg, std))
@@ -275,7 +268,7 @@ plt.xlabel('days')
 plt.ylabel('price')
 #plt.plot(prices)
 # it's not easy to see buys and sell on entire graph at once, better to use windows
-plt.scatter(x[0:1000], buys[0:1000], c='green', alpha=1., s=8.)
-plt.scatter(x[0:1000], sells[0:1000], c='red', alpha=1., s=8.)
+plt.scatter(x[:1000], buys[:1000], c='green', alpha=1., s=8.)
+plt.scatter(x[:1000], sells[:1000], c='red', alpha=1., s=8.)
 plt.savefig('bot_trades.png')
 plt.show()
